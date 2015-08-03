@@ -1,4 +1,8 @@
 
+use std::fs::File;
+use std::io::BufReader;
+use std::io::Read;
+
 pub struct TextHeader {
   text_header: [u8; 30],
 }
@@ -24,20 +28,32 @@ pub struct RasterPacketHeader {
 }
 
 pub struct RadarFileParser {
-  x: bool
+  raw: Vec<u8>
 }
 
 impl std::default::Default for RadarFileParser {
   fn default() -> RadarFileParser {
     RadarFileParser {
-      x: true
+      raw: Vec::new(),
     }
   }
 }
 
 impl RadarFileParser {
-  pub fn load_file(&mut self, radar_file_name : &str) -> bool {
-    return true;
+  pub fn load_file(&mut self, radar_file_name : &str) -> usize {
+    let fin = match File::open(radar_file_name) {
+      Ok(fin) => fin,
+      Err(..) => panic!("unable to open radar_file_name"),
+    };
+
+    let mut bfrdr = BufReader::new(fin);
+
+    let result = match bfrdr.read_to_end(&mut self.raw) {
+      Ok(result) => result,
+      Err(..) => panic!("unable to read to end"),
+    };
+
+    return self.raw.len();
   }
 }
 
