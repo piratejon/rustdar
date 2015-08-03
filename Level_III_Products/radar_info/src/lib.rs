@@ -56,7 +56,7 @@ impl RadarFileParser {
     return self.raw.len();
   }
 
-  pub fn get_text_header(&self) -> &str {
+  pub fn decode_text_header(&self) -> &str {
     return match std::str::from_utf8(&self.raw[0..30]) {
       Ok(ret) => ret,
       Err(..) => panic!("Unable to decode text header"),
