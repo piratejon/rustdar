@@ -1,0 +1,7 @@
+[package]
+name = "radar_info"
+version = "0.1.0"
+authors = ["Jonathan Wesley Stone <js@piratejon.com>"]
+
+[dependencies.nom]
+git = "https://github.com/Geal/nom"
