@@ -3,12 +3,14 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
-pub struct TextHeader {
-  text_header: [u8; 30],
-}
-
 pub struct MessageHeader {
-  packed_values: [u8; 9],
+  pub MessageCode: u16,
+  pub DateOfMessage: u16,
+  pub TimeOfMessage: u32,
+  pub LengthOfMessage: u32,
+  pub SourceID: u16,
+  pub DestinationID: u16,
+  pub NumberOfBlocks: u16
 }
 
 pub struct ProductDescription {
@@ -61,6 +63,27 @@ impl RadarFileParser {
       Ok(ret) => ret,
       Err(..) => panic!("Unable to decode text header"),
     };
+  }
+
+  pub fn decode_message_header(&self) -> MessageHeader {
+    let message_header_offset = 30;
+    MessageHeader {
+      MessageCode: self.word_maker(self.raw[message_header_offset + 0], self.raw[message_header_offset + 1]),
+      DateOfMessage: self.word_maker(self.raw[message_header_offset + 2], self.raw[message_header_offset + 3]),
+      TimeOfMessage: self.dword_maker(self.word_maker(self.raw[message_header_offset + 4], self.raw[message_header_offset + 5]), self.word_maker(self.raw[message_header_offset + 6], self.raw[message_header_offset + 7])),
+      LengthOfMessage: self.dword_maker(self.word_maker(self.raw[message_header_offset + 8], self.raw[message_header_offset + 9]), self.word_maker(self.raw[message_header_offset + 10], self.raw[message_header_offset + 11])),
+      SourceID: self.word_maker(self.raw[message_header_offset + 12], self.raw[message_header_offset + 13]),
+      DestinationID: self.word_maker(self.raw[message_header_offset + 14], self.raw[message_header_offset + 15]),
+      NumberOfBlocks: self.word_maker(self.raw[message_header_offset + 16], self.raw[message_header_offset + 17]),
+    }
+  }
+
+  pub fn word_maker(&self, hi : u8, lo : u8) -> u16 {
+    return ((hi as u16) << 8) | (lo as u16);
+  }
+
+  pub fn dword_maker(&self, hi : u16, lo : u16) -> u32 {
+    return ((hi as u32) << 16) | (lo as u32);
   }
 }
 
