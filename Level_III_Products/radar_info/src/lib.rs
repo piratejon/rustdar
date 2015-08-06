@@ -34,20 +34,21 @@ pub struct RadarFileParser {
 }
 
 pub struct RadarFetcher {
-  x: usize
-}
-
-impl std::default::Default for RadarFetcher {
-  fn default() -> RadarFetcher {
-    RadarFetcher {
-      x: 0
-    }
-  }
+  buffered_reader: Box<BufReader<File>>,
 }
 
 impl RadarFetcher {
-  pub fn open_file(&mut self, radar_file_name : &str) -> bool {
-    return true;
+  pub fn from_file(radar_file_name : &str) -> RadarFetcher {
+    let fin = match File::open(radar_file_name) {
+      Ok(fin) => fin,
+      Err(..) => panic!("unable to open radar_file_name"),
+    };
+
+    let mut bfrdr = BufReader::new(fin);
+
+    return RadarFetcher {
+      buffered_reader: Box::new(bfrdr),
+    }
   }
 
   pub fn has_bytes(&self) -> bool {

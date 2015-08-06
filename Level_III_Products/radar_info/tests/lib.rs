@@ -18,10 +18,11 @@ fn ri_helper_word_builder() {
 
 #[test]
 fn ri_radar_fetcher() {
-  let mut radar_fetcher : radar_info::RadarFetcher = std::default::Default::default();
+  // let mut radar_fetcher : radar_info::RadarFetcher = std::default::Default::default();
+  let mut radar_fetcher : radar_info::RadarFetcher = radar_info::RadarFetcher::from_file("tests/sn.last");
 
   // "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n", 22178
-  assert!(radar_fetcher.open_file("tests/sn.last"));
+  // assert!(radar_fetcher.open_file("tests/sn.last"));
   assert!(radar_fetcher.has_bytes());
   assert_eq!(radar_fetcher.fetch_byte(), 'S' as u8);
   assert!(radar_fetcher.has_bytes());
