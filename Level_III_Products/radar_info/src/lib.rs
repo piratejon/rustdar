@@ -56,29 +56,16 @@ impl RadarFetcher {
   }
 
   pub fn fetch_byte(&mut self) -> u8 {
-    let mut buf: [u8; 1] = [0xff];
-    self.last_read_size = match self.buffered_reader.read(&mut buf) {
-      Ok(bytes_read) => bytes_read,
-      Err(..) => panic!("failed to read from buffered reader"),
-    };
-    return buf[0];
+    return self.fetch_bytes(1)[0];
   }
 
   pub fn fetch_word(&mut self) -> u16 {
-    let mut buf: [u8; 2] = [0xff, 0xff];
-    self.last_read_size = match self.buffered_reader.read(&mut buf) {
-      Ok(bytes_read) => bytes_read,
-      Err(..) => panic!("failed to read from buffered reader"),
-    };
+    let buf = self.fetch_bytes(2);
     return (((buf[0] as u16) << 8) | (buf[1] as u16));
   }
 
   pub fn fetch_dword(&mut self) -> u32 {
-    let mut buf: [u8; 4] = [0xff, 0xff, 0xff, 0xff];
-    self.last_read_size = match self.buffered_reader.read(&mut buf) {
-      Ok(bytes_read) => bytes_read,
-      Err(..) => panic!("failed to read from buffered reader"),
-    };
+    let buf = self.fetch_bytes(4);
     return (((buf[0] as u32) << 24) | ((buf[1] as u32) << 16) | ((buf[2] as u32) << 8) | (buf[3] as u32));
   }
 
