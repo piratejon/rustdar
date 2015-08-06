@@ -24,7 +24,7 @@ fn ri_radar_fetcher() {
 
   // "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n", 22178
   assert_eq!(radar_fetcher.get_last_read_size(), 0);
-  // assert_eq!(radar_fetcher.fetch_bytes(30), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
+  // assert_eq!(radar_fetcher.fetch_bytes(30), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n"); // do the hard math
   assert_eq!(radar_fetcher.get_last_read_size(), 0);
   assert_eq!(radar_fetcher.fetch_byte(), 'S' as u8);
   assert_eq!(radar_fetcher.get_last_read_size(), 1);
@@ -55,7 +55,6 @@ fn ri_read_a_file() {
   assert_eq!(message_header.DestinationID, 0);
   assert_eq!(message_header.NumberOfBlocks, 3);
 
-  /*
   let product_description_block = radar_parser.decode_product_description_block();
   assert_eq!(product_description_block.Divider, 0xffff);
   assert_eq!(product_description_block.Latitude1K, 35333);
@@ -99,6 +98,8 @@ fn ri_read_a_file() {
   assert_eq!(product_description_block.DataLevelThreshold[15], 0x004b);
   assert_eq!(product_description_block.Version, 0);
   assert_eq!(product_description_block.SpotBlank, 0);
-  */
+  assert_eq!(product_description_block.OffsetToSymbology, 60);
+  assert_eq!(product_description_block.OffsetToGraphic, 0);
+  assert_eq!(product_description_block.OffsetToTabular, 0);
 }
 
