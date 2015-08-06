@@ -30,29 +30,32 @@ pub struct RasterPacketHeader {
 }
 
 pub struct RadarFileParser {
-  raw: Vec<u8>
+  raw: Vec<u8>,
 }
 
 pub struct RadarFetcher {
-  radar_reader: Option<BufReader>
+  x: usize
 }
 
 impl std::default::Default for RadarFetcher {
   fn default() -> RadarFetcher {
-    radar_reader: None
+    RadarFetcher {
+      x: 0
+    }
   }
 }
 
 impl RadarFetcher {
   pub fn open_file(&mut self, radar_file_name : &str) -> bool {
-    let fin = match File::open(radar_file_name) {
-      Ok(fin) => fin,
-      Err(..) => panic!("unable to open radar file"),
-    }
-
-    self.radar_reader = BufReader::new(fin);
-
     return true;
+  }
+
+  pub fn has_bytes(&self) -> bool {
+    return true;
+  }
+
+  pub fn fetch_byte(&self) -> u8 {
+    return 'S' as u8;
   }
 }
 
