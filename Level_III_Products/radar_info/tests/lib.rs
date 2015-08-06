@@ -20,9 +20,11 @@ fn ri_helper_word_builder() {
 
 #[test]
 fn ri_radar_fetcher() {
-  let mut radar_fetcher : radar_info::RadarFetcher = radar_info::RadarFetcher::from_file("tests/sn.last");
+  let mut radar_fetcher = radar_info::RadarFetcher::from_file("tests/sn.last");
 
   // "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n", 22178
+  assert_eq!(radar_fetcher.get_last_read_size(), 0);
+  // assert_eq!(radar_fetcher.fetch_bytes(30), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
   assert_eq!(radar_fetcher.get_last_read_size(), 0);
   assert_eq!(radar_fetcher.fetch_byte(), 'S' as u8);
   assert_eq!(radar_fetcher.get_last_read_size(), 1);
@@ -36,12 +38,12 @@ fn ri_radar_fetcher() {
   assert_eq!(radar_fetcher.fetch_bytes(5), vec![0x4F, 0x55, 0x4E, 0x20, 0x30]);
 }
 
-/*
 #[test]
 fn ri_read_a_file() {
-  let mut radar_parser : radar_info::RadarFileParser = std::default::Default::default();
+  let mut radar_parser = radar_info::RadarFileParser::from_fetcher(
+      radar_info::RadarFetcher::from_file("tests/sn.last")
+      );
 
-  assert_eq!(radar_parser.load_file("tests/sn.last"), 22178);
   assert_eq!(radar_parser.decode_text_header(), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
 
   let message_header = radar_parser.decode_message_header();
@@ -99,5 +101,4 @@ fn ri_read_a_file() {
   assert_eq!(product_description_block.SpotBlank, 0);
   */
 }
-*/
 

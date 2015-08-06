@@ -13,8 +13,25 @@ pub struct MessageHeader {
   pub NumberOfBlocks: u16
 }
 
-pub struct ProductDescription {
-  packed_values: [u8; 51],
+pub struct ProductDescriptionBlock {
+  Divider: u16,
+  Latitude1K: u16,
+  Longitude1K: u16,
+  Height: u16,
+  ProductCode: u16,
+  OperationalMode: u16,
+  VolumeCoveragePattern: u16,
+  SequenceNumber: u16,
+  VolumeScanNumber: u16,
+  VolumeScanDate: u16,
+  VolumeScanStartTime: u16,
+  ProductGenerationDate: u16,
+  ProductGenerationTime: u16,
+  ProductDependent: [u16; 10],
+  ElevationNumber: u16,
+  DataLevelThreshold: [u16; 16],
+  Version: u16,
+  SpotBlank: u16,
 }
 
 pub struct ProductSymbologyBlock {
@@ -30,7 +47,7 @@ pub struct RasterPacketHeader {
 }
 
 pub struct RadarFileParser {
-  radar_fetcher: RadarFetcher,
+  fetcher: RadarFetcher,
 }
 
 pub struct RadarFetcher {
@@ -99,82 +116,85 @@ impl RadarFetcher {
   }
 }
 
-/*
 impl RadarFileParser {
-  pub fn from_fetcher(fetcher: RadarFetcher) -> RadarFileParser {
+  pub fn from_fetcher(radar_fetcher: RadarFetcher) -> RadarFileParser {
     RadarFileParser {
-      radar_fetcher: fetcher
+      fetcher: radar_fetcher
     }
   }
 
-  pub fn decode_text_header(&self) -> &str {
-    return match std::str::from_utf8(&self.raw[0..30]) {
+  pub fn decode_text_header(&mut self) -> &str {
+    let text_header_bytes = self.fetcher.fetch_bytes(30);
+    let new_string = String::new(text_header_bytes);
+    return match std::str::from_utf8(text_header_bytes.to_string()) {
       Ok(ret) => ret,
       Err(..) => panic!("Unable to decode text header"),
     };
+    // return "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n";
   }
 
-  /*
-  pub fn decode_message_header(&self) -> MessageHeader {
+  pub fn decode_message_header(&mut self) -> MessageHeader {
     let offset = 30;
     MessageHeader {
-      MessageCode: self.word_maker(self.raw[offset + 0], self.raw[offset + 1]),
-      DateOfMessage: self.word_maker(self.raw[offset + 2], self.raw[offset + 3]),
-      TimeOfMessage: self.dword_maker(self.word_maker(self.raw[offset + 4], self.raw[offset + 5]), self.word_maker(self.raw[offset + 6], self.raw[offset + 7])),
-      LengthOfMessage: self.dword_maker(self.word_maker(self.raw[offset + 8], self.raw[offset + 9]), self.word_maker(self.raw[offset + 10], self.raw[offset + 11])),
-      SourceID: self.word_maker(self.raw[offset + 12], self.raw[offset + 13]),
-      DestinationID: self.word_maker(self.raw[offset + 14], self.raw[offset + 15]),
-      NumberOfBlocks: self.word_maker(self.raw[offset + 16], self.raw[offset + 17]),
+      MessageCode: self.fetcher.fetch_word(),
+      DateOfMessage: self.fetcher.fetch_word(),
+      TimeOfMessage: self.fetcher.fetch_dword(),
+      LengthOfMessage: self.fetcher.fetch_dword(),
+      SourceID: self.fetcher.fetch_word(),
+      DestinationID: self.fetcher.fetch_word(),
+      NumberOfBlocks: self.fetcher.fetch_word(),
     }
   }
-  */
 
-  pub fn decode_product_description_block(&self) -> ProductDescriptionBlock {
-    let offset = 47;
+  pub fn decode_product_description_block(&mut self) -> ProductDescriptionBlock {
     ProductDescriptionBlock {
+      Divider: self.fetcher.fetch_word(),
+      Latitude1K: self.fetcher.fetch_word(),
+      Longitude1K: self.fetcher.fetch_word(),
+      Height: self.fetcher.fetch_word(),
+      ProductCode: self.fetcher.fetch_word(),
+      OperationalMode: self.fetcher.fetch_word(),
+      VolumeCoveragePattern: self.fetcher.fetch_word(),
+      SequenceNumber: self.fetcher.fetch_word(),
+      VolumeScanNumber: self.fetcher.fetch_word(),
+      VolumeScanDate: self.fetcher.fetch_word(),
+      VolumeScanStartTime: self.fetcher.fetch_word(),
+      ProductGenerationDate: self.fetcher.fetch_word(),
+      ProductGenerationTime: self.fetcher.fetch_word(),
+      ProductDependent: [
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word()
+      ],
+      ElevationNumber: self.fetcher.fetch_word(),
+      DataLevelThreshold: [
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+        self.fetcher.fetch_word(),
+      ],
+      Version: self.fetcher.fetch_word(),
+      SpotBlank: self.fetcher.fetch_word(),
     }
-    assert_eq!(product_description_block.Divider, 0xffff);
-    assert_eq!(product_description_block.Latitude1K, 35333);
-    assert_eq!(product_description_block.Longitude1K, -97278);
-    assert_eq!(product_description_block.Height, 1277);
-    assert_eq!(product_description_block.ProductCode, 19);
-    assert_eq!(product_description_block.OperationalMode, 2);
-    assert_eq!(product_description_block.VolumeCoveragePattern, 212);
-    assert_eq!(product_description_block.SequenceNumber, 3380);
-    assert_eq!(product_description_block.VolumeScanNumber, 0x2e);
-    assert_eq!(product_description_block.VolumeScanDate, 16651);
-    assert_eq!(product_description_block.VolumeScanStartTime, 10303);
-    assert_eq!(product_description_block.ProductGenerationDate, 16651);
-    assert_eq!(product_description_block.ProductGenerationTime, 10323);
-    assert_eq!(product_description_block.ProductDependent[0], 0);
-    assert_eq!(product_description_block.ProductDependent[1], 0);
-    assert_eq!(product_description_block.ProductDependent[2], 5);
-    assert_eq!(product_description_block.ProductDependent[3], 0x003b);
-    assert_eq!(product_description_block.ProductDependent[4], 0);
-    assert_eq!(product_description_block.ProductDependent[5], 0);
-    assert_eq!(product_description_block.ProductDependent[6], 0);
-    assert_eq!(product_description_block.ProductDependent[7], 0xc22f);
-    assert_eq!(product_description_block.ProductDependent[8], 0xa50c);
-    assert_eq!(product_description_block.ProductDependent[9], 0);
-    assert_eq!(product_description_block.ElevationNumber, 1);
-    assert_eq!(product_description_block.DataLevelThreshold[0], 0x8002);
-    assert_eq!(product_description_block.DataLevelThreshold[1], 0x0005);
-    assert_eq!(product_description_block.DataLevelThreshold[2], 0x000a);
-    assert_eq!(product_description_block.DataLevelThreshold[3], 0x000f);
-    assert_eq!(product_description_block.DataLevelThreshold[4], 0x0014);
-    assert_eq!(product_description_block.DataLevelThreshold[5], 0x0019);
-    assert_eq!(product_description_block.DataLevelThreshold[6], 0x001e);
-    assert_eq!(product_description_block.DataLevelThreshold[7], 0x0023);
-    assert_eq!(product_description_block.DataLevelThreshold[8], 0x0028);
-    assert_eq!(product_description_block.DataLevelThreshold[9], 0x002d);
-    assert_eq!(product_description_block.DataLevelThreshold[10], 0x0032);
-    assert_eq!(product_description_block.DataLevelThreshold[11], 0x0037);
-    assert_eq!(product_description_block.DataLevelThreshold[12], 0x003c);
-    assert_eq!(product_description_block.DataLevelThreshold[13], 0x0041);
-    assert_eq!(product_description_block.DataLevelThreshold[14], 0x0046);
-    assert_eq!(product_description_block.DataLevelThreshold[15], 0x004b);
-    assert_eq!(product_description_block.Version, 0);
-    assert_eq!(product_description_block.SpotBlank, 0);
   }
 
   pub fn word_maker(&self, hi : u8, lo : u8) -> u16 {
@@ -185,5 +205,4 @@ impl RadarFileParser {
     return ((hi as u32) << 16) | (lo as u32);
   }
 }
-*/
 
