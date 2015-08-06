@@ -33,7 +33,7 @@ fn ri_radar_fetcher() {
   assert_eq!(radar_fetcher.fetch_dword(), 0x3534204B);
   assert_eq!(radar_fetcher.get_last_read_size(), 4);
 
-  assert_eq!(radar_fetcher.get_bytes(5), vec![0x4F, 0x55, 0x4E, 0x20, 0x30]);
+  assert_eq!(radar_fetcher.fetch_bytes(5), vec![0x4F, 0x55, 0x4E, 0x20, 0x30]);
 }
 
 /*

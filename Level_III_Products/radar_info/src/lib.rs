@@ -83,12 +83,27 @@ impl RadarFetcher {
   }
 
   pub fn fetch_bytes(&mut self, bytes: usize) -> Vec<u8> {
-    let mut buf = Vec::<u8>::with_capacity(bytes);
-    let mut tk = self.buffered_reader.take(bytes as u64);
-    self.last_read_size = match tk.read_to_end(&mut buf) {
-      Ok(bytes_read) => bytes_read,
-      Err(..) => panic!("failed to take from buffered reader"),
-    };
+    let mut buf = Vec::<u8>::new();
+    let mut byte_buf: [u8; 1] = [0xff];
+    let mut bytes_read : usize;
+
+    loop {
+      bytes_read = match self.buffered_reader.read(&mut byte_buf) {
+        Ok(bytes_read) => bytes_read,
+        Err(..) => panic!("failed to read a single byte gosh"),
+      };
+
+      if bytes_read == 1 {
+        buf.push(byte_buf[0]);
+      } else {
+        break;
+      }
+
+      if bytes_read == bytes {
+        break;
+      }
+    }
+
     return buf;
   }
 }
