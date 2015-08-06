@@ -87,6 +87,8 @@ impl RadarFetcher {
     let mut byte_buf: [u8; 1] = [0xff];
     let mut bytes_read : usize;
 
+    self.last_read_size = 0;
+
     loop {
       bytes_read = match self.buffered_reader.read(&mut byte_buf) {
         Ok(bytes_read) => bytes_read,
@@ -99,7 +101,9 @@ impl RadarFetcher {
         break;
       }
 
-      if bytes_read == bytes {
+      self.last_read_size += 1;
+
+      if self.last_read_size == bytes {
         break;
       }
     }
