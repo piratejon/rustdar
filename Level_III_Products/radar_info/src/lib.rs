@@ -30,7 +30,7 @@ pub struct RasterPacketHeader {
 }
 
 pub struct RadarFileParser {
-  raw: Vec<u8>,
+  radar_fetcher: RadarFetcher,
 }
 
 pub struct RadarFetcher {
@@ -39,7 +39,7 @@ pub struct RadarFetcher {
 }
 
 impl RadarFetcher {
-  pub fn from_file(radar_file_name : &str) -> RadarFetcher {
+  pub fn from_file(radar_file_name: &str) -> RadarFetcher {
     let fin = match File::open(radar_file_name) {
       Ok(fin) => fin,
       Err(..) => panic!("unable to open radar_file_name"),
@@ -81,31 +81,24 @@ impl RadarFetcher {
     };
     return (((buf[0] as u32) << 24) | ((buf[1] as u32) << 16) | ((buf[2] as u32) << 8) | (buf[3] as u32));
   }
-}
 
-impl std::default::Default for RadarFileParser {
-  fn default() -> RadarFileParser {
-    RadarFileParser {
-      raw: Vec::new(),
-    }
+  pub fn fetch_bytes(&mut self, bytes: usize) -> Vec<u8> {
+    let mut buf = Vec::<u8>::with_capacity(bytes);
+    let mut tk = self.buffered_reader.take(bytes as u64);
+    self.last_read_size = match tk.read_to_end(&mut buf) {
+      Ok(bytes_read) => bytes_read,
+      Err(..) => panic!("failed to take from buffered reader"),
+    };
+    return buf;
   }
 }
 
+/*
 impl RadarFileParser {
-  pub fn load_file(&mut self, radar_file_name : &str) -> usize {
-    let fin = match File::open(radar_file_name) {
-      Ok(fin) => fin,
-      Err(..) => panic!("unable to open radar_file_name"),
-    };
-
-    let mut bfrdr = BufReader::new(fin);
-
-    let result = match bfrdr.read_to_end(&mut self.raw) {
-      Ok(result) => result,
-      Err(..) => panic!("unable to read to end"),
-    };
-
-    return self.raw.len();
+  pub fn from_fetcher(fetcher: RadarFetcher) -> RadarFileParser {
+    RadarFileParser {
+      radar_fetcher: fetcher
+    }
   }
 
   pub fn decode_text_header(&self) -> &str {
@@ -115,6 +108,7 @@ impl RadarFileParser {
     };
   }
 
+  /*
   pub fn decode_message_header(&self) -> MessageHeader {
     let offset = 30;
     MessageHeader {
@@ -127,8 +121,8 @@ impl RadarFileParser {
       NumberOfBlocks: self.word_maker(self.raw[offset + 16], self.raw[offset + 17]),
     }
   }
+  */
 
-  /*
   pub fn decode_product_description_block(&self) -> ProductDescriptionBlock {
     let offset = 47;
     ProductDescriptionBlock {
@@ -176,7 +170,6 @@ impl RadarFileParser {
     assert_eq!(product_description_block.Version, 0);
     assert_eq!(product_description_block.SpotBlank, 0);
   }
-  */
 
   pub fn word_maker(&self, hi : u8, lo : u8) -> u16 {
     return ((hi as u16) << 8) | (lo as u16);
@@ -186,4 +179,5 @@ impl RadarFileParser {
     return ((hi as u32) << 16) | (lo as u32);
   }
 }
+*/
 

@@ -1,6 +1,7 @@
 
 extern crate radar_info;
 
+/*
 #[test]
 fn ri_helper_word_builder() {
   let radar_parser : radar_info::RadarFileParser = std::default::Default::default();
@@ -15,14 +16,13 @@ fn ri_helper_word_builder() {
   assert_eq!(radar_parser.dword_maker(1, 0), 0x10000);
   assert_eq!(radar_parser.dword_maker(0x41, 0x0b), 0x41000b);
 }
+*/
 
 #[test]
 fn ri_radar_fetcher() {
-  // let mut radar_fetcher : radar_info::RadarFetcher = std::default::Default::default();
   let mut radar_fetcher : radar_info::RadarFetcher = radar_info::RadarFetcher::from_file("tests/sn.last");
 
   // "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n", 22178
-  // assert!(radar_fetcher.has_bytes());
   assert_eq!(radar_fetcher.get_last_read_size(), 0);
   assert_eq!(radar_fetcher.fetch_byte(), 'S' as u8);
   assert_eq!(radar_fetcher.get_last_read_size(), 1);
@@ -33,11 +33,10 @@ fn ri_radar_fetcher() {
   assert_eq!(radar_fetcher.fetch_dword(), 0x3534204B);
   assert_eq!(radar_fetcher.get_last_read_size(), 4);
 
-  // loop through 22170 more bytes
-
-  // assert!(!radar_fetcher.has_bytes());
+  assert_eq!(radar_fetcher.get_bytes(5), vec![0x4F, 0x55, 0x4E, 0x20, 0x30]);
 }
 
+/*
 #[test]
 fn ri_read_a_file() {
   let mut radar_parser : radar_info::RadarFileParser = std::default::Default::default();
@@ -100,4 +99,5 @@ fn ri_read_a_file() {
   assert_eq!(product_description_block.SpotBlank, 0);
   */
 }
+*/
 
