@@ -30,8 +30,8 @@ fn ri_radar_fetcher() {
   assert_eq!(radar_fetcher.get_last_read_size(), 1);
   assert_eq!(radar_fetcher.fetch_word(), 0x5553);
   assert_eq!(radar_fetcher.get_last_read_size(), 2);
-  // assert_eq!(radar_fetcher.fetch_dword(), 0x3534204B);
-  // assert!(radar_fetcher.has_bytes());
+  assert_eq!(radar_fetcher.fetch_dword(), 0x3534204B);
+  assert_eq!(radar_fetcher.get_last_read_size(), 4);
 
   // loop through 22170 more bytes
 
