@@ -34,7 +34,8 @@ pub struct RadarFileParser {
 }
 
 pub struct RadarFetcher {
-  buffered_reader: Box<BufReader<File>>,
+  buffered_reader: BufReader<File>,
+  last_read_size: usize,
 }
 
 impl RadarFetcher {
@@ -44,19 +45,23 @@ impl RadarFetcher {
       Err(..) => panic!("unable to open radar_file_name"),
     };
 
-    let mut bfrdr = BufReader::new(fin);
-
     return RadarFetcher {
-      buffered_reader: Box::new(bfrdr),
+      buffered_reader: BufReader::new(fin),
+      last_read_size: 0,
     }
   }
 
-  pub fn has_bytes(&self) -> bool {
-    return true;
+  pub fn get_last_read_size(&self) -> usize {
+    return self.last_read_size;
   }
 
-  pub fn fetch_byte(&self) -> u8 {
-    return 'S' as u8;
+  pub fn fetch_byte(&mut self) -> u8 {
+    let mut buf: [u8; 1] = [0xff];
+    self.last_read_size = match self.buffered_reader.read(&mut buf) {
+      Ok(bytes_read) => bytes_read,
+      Err(..) => panic!("failed to read from buffered reader"),
+    };
+    return buf[0];
   }
 }
 

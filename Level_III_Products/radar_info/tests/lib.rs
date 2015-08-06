@@ -22,16 +22,17 @@ fn ri_radar_fetcher() {
   let mut radar_fetcher : radar_info::RadarFetcher = radar_info::RadarFetcher::from_file("tests/sn.last");
 
   // "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n", 22178
-  // assert!(radar_fetcher.open_file("tests/sn.last"));
-  assert!(radar_fetcher.has_bytes());
+  // assert!(radar_fetcher.has_bytes());
+  assert_eq!(radar_fetcher.get_last_read_size(), 0);
   assert_eq!(radar_fetcher.fetch_byte(), 'S' as u8);
-  assert!(radar_fetcher.has_bytes());
+  assert_eq!(radar_fetcher.get_last_read_size(), 1);
+  // assert!(radar_fetcher.has_bytes());
   // assert_eq!(radar_fetcher.fetch_byte(), 'D' as u8);
-  assert!(radar_fetcher.has_bytes());
+  // assert!(radar_fetcher.has_bytes());
   // assert_eq!(radar_fetcher.fetch_word(), 0x5553);
-  assert!(radar_fetcher.has_bytes());
+  // assert!(radar_fetcher.has_bytes());
   // assert_eq!(radar_fetcher.fetch_dword(), 0x3534204B);
-  assert!(radar_fetcher.has_bytes());
+  // assert!(radar_fetcher.has_bytes());
 
   // loop through 22170 more bytes
 
