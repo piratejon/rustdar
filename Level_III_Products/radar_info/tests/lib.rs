@@ -26,11 +26,10 @@ fn ri_radar_fetcher() {
   assert_eq!(radar_fetcher.get_last_read_size(), 0);
   assert_eq!(radar_fetcher.fetch_byte(), 'S' as u8);
   assert_eq!(radar_fetcher.get_last_read_size(), 1);
-  // assert!(radar_fetcher.has_bytes());
-  // assert_eq!(radar_fetcher.fetch_byte(), 'D' as u8);
-  // assert!(radar_fetcher.has_bytes());
-  // assert_eq!(radar_fetcher.fetch_word(), 0x5553);
-  // assert!(radar_fetcher.has_bytes());
+  assert_eq!(radar_fetcher.fetch_byte(), 'D' as u8);
+  assert_eq!(radar_fetcher.get_last_read_size(), 1);
+  assert_eq!(radar_fetcher.fetch_word(), 0x5553);
+  assert_eq!(radar_fetcher.get_last_read_size(), 2);
   // assert_eq!(radar_fetcher.fetch_dword(), 0x3534204B);
   // assert!(radar_fetcher.has_bytes());
 

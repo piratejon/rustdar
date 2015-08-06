@@ -63,6 +63,15 @@ impl RadarFetcher {
     };
     return buf[0];
   }
+
+  pub fn fetch_word(&mut self) -> u16 {
+    let mut buf: [u8; 2] = [0xff, 0xff];
+    self.last_read_size = match self.buffered_reader.read(&mut buf) {
+      Ok(bytes_read) => bytes_read,
+      Err(..) => panic!("failed to read from buffered reader"),
+    };
+    return ((buf[0] as u16) << 8 | (buf[1] as u16));
+  }
 }
 
 impl std::default::Default for RadarFileParser {
