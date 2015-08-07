@@ -1,10 +1,9 @@
 
 extern crate radar_info;
 
-/*
 #[test]
 fn ri_helper_word_builder() {
-  let radar_parser : radar_info::RadarFileParser = std::default::Default::default();
+  let radar_parser = radar_info::RadarFetcher::from_file("tests/sn.last");
 
   assert_eq!(radar_parser.word_maker(0, 0), 0);
   assert_eq!(radar_parser.word_maker(0, 1), 1);
@@ -16,7 +15,6 @@ fn ri_helper_word_builder() {
   assert_eq!(radar_parser.dword_maker(1, 0), 0x10000);
   assert_eq!(radar_parser.dword_maker(0x41, 0x0b), 0x41000b);
 }
-*/
 
 #[test]
 fn ri_radar_fetcher() {
@@ -101,5 +99,17 @@ fn ri_read_a_file() {
   assert_eq!(product_description_block.OffsetToSymbology, 60);
   assert_eq!(product_description_block.OffsetToGraphic, 0);
   assert_eq!(product_description_block.OffsetToTabular, 0);
+
+  let product_symbology_block = radar_parser.decode_product_symbology_block();
+  assert_eq!(product_symbology_block.Divider, 0xffff);
+  assert_eq!(product_symbology_block.BlockId, 1);
+  assert_eq!(product_symbology_block.LengthOfBlock, 22028);
+  assert_eq!(product_symbology_block.NumberOfLayers, 1);
+
+  /*
+  let layer = product_symbology_block.Layers[0];
+  assert_eq!(layer.LayerDivider, 0xffff);
+  assert_eq!(layer.LengthOfDataLayer, 22012);
+  */
 }
 
