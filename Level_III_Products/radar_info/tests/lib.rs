@@ -106,10 +106,8 @@ fn ri_read_a_file() {
   assert_eq!(product_symbology_block.LengthOfBlock, 22028);
   assert_eq!(product_symbology_block.NumberOfLayers, 1);
 
-  /*
-  let layer = product_symbology_block.Layers[0];
-  assert_eq!(layer.LayerDivider, 0xffff);
-  assert_eq!(layer.LengthOfDataLayer, 22012);
-  */
+  let product_symbology_block_layer = radar_parser.decode_product_symbology_block_layer();
+  assert_eq!(product_symbology_block_layer.Divider, 0xffff);
+  assert_eq!(product_symbology_block_layer.LengthOfDataLayer, 22012);
 }
 

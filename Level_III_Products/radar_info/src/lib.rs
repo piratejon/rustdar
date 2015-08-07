@@ -45,6 +45,11 @@ pub struct ProductSymbologyBlock {
 //  pub Layers: Vec<ProductSymbologyBlockLayer>,
 }
 
+pub struct ProductSymbologyBlockLayer {
+  pub Divider: u16,
+  pub LengthOfDataLayer: u32,
+}
+
 pub struct RadarFileParser {
   fetcher: RadarFetcher,
 }
@@ -227,6 +232,13 @@ impl RadarFileParser {
       BlockId: self.fetcher.fetch_word(),
       LengthOfBlock: self.fetcher.fetch_dword(),
       NumberOfLayers: self.fetcher.fetch_word(),
+    }
+  }
+
+  pub fn decode_product_symbology_block_layer(&mut self) -> ProductSymbologyBlockLayer {
+    ProductSymbologyBlockLayer {
+      Divider: self.fetcher.fetch_word(),
+      LengthOfDataLayer: self.fetcher.fetch_dword(),
     }
   }
 }
