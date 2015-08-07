@@ -60,6 +60,17 @@ pub struct RadialDataPacketHeader {
   pub NumberOfRadials: u16,
 }
 
+pub struct RadialDataPacketRadialRun {
+  pub Length: u16,
+  pub Color: u16,
+}
+
+pub struct RadialDataPacketRadialHeader {
+  pub NumberOfHalfWords: u16,
+  pub RadialStartAngle: u16,
+  pub RadialAngleDelta: u16,
+}
+
 pub struct RadarFileParser {
   fetcher: RadarFetcher,
 }
@@ -261,6 +272,19 @@ impl RadarFileParser {
       JCenterOfSweep: self.fetcher.fetch_word(),
       ScaleFactor: self.fetcher.fetch_word(),
       NumberOfRadials: self.fetcher.fetch_word(),
+    }
+  }
+
+  fn fetch_radial_data_packet_radial_runs(&self, runs : u16) -> Vec<RadialDataPacketRadialRun> {
+    let mut radial_data_packet_radial_runs = Vec::<RadialDataPacketRadialRun>::new();
+    return radial_data_packet_radial_runs;
+  }
+
+  pub fn decode_radial_data_packet_radial_header(&mut self) -> RadialDataPacketRadialHeader {
+    RadialDataPacketRadialHeader {
+      NumberOfHalfWords: self.fetcher.fetch_word(),
+      RadialStartAngle: self.fetcher.fetch_word(),
+      RadialAngleDelta: self.fetcher.fetch_word(),
     }
   }
 }

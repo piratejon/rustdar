@@ -118,5 +118,44 @@ fn ri_read_a_file() {
   assert_eq!(radial_data_packet_header.JCenterOfSweep, 280);
   assert_eq!(radial_data_packet_header.ScaleFactor, 999);
   assert_eq!(radial_data_packet_header.NumberOfRadials, 360);
+
+  let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+  assert_eq!(radial_data_packet_radial_header.NumberOfHalfWords, 30);
+  assert_eq!(radial_data_packet_radial_header.RadialStartAngle, 2680);
+  assert_eq!(radial_data_packet_radial_header.RadialAngleDelta, 10);
+  /*
+  assert_eq!(radial_data_packet_radial.Runs, [
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+      { 0x20; 0x32 },
+  ]);
+  */
 }
 
