@@ -109,5 +109,14 @@ fn ri_read_a_file() {
   let product_symbology_block_layer = radar_parser.decode_product_symbology_block_layer();
   assert_eq!(product_symbology_block_layer.Divider, 0xffff);
   assert_eq!(product_symbology_block_layer.LengthOfDataLayer, 22012);
+
+  let radial_data_packet_header = radar_parser.decode_radial_data_packet_header();
+  assert_eq!(radial_data_packet_header.PacketCode, 0xaf1f);
+  assert_eq!(radial_data_packet_header.IndexOfFirstRangeBin, 0);
+  assert_eq!(radial_data_packet_header.NumberOfRangeBins, 230);
+  assert_eq!(radial_data_packet_header.ICenterOfSweep, 256);
+  assert_eq!(radial_data_packet_header.JCenterOfSweep, 280);
+  assert_eq!(radial_data_packet_header.ScaleFactor, 999);
+  assert_eq!(radial_data_packet_header.NumberOfRadials, 360);
 }
 

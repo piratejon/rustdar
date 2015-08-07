@@ -50,6 +50,16 @@ pub struct ProductSymbologyBlockLayer {
   pub LengthOfDataLayer: u32,
 }
 
+pub struct RadialDataPacketHeader {
+  pub PacketCode: u16,
+  pub IndexOfFirstRangeBin: u16,
+  pub NumberOfRangeBins: u16,
+  pub ICenterOfSweep: u16,
+  pub JCenterOfSweep: u16,
+  pub ScaleFactor: u16,
+  pub NumberOfRadials: u16,
+}
+
 pub struct RadarFileParser {
   fetcher: RadarFetcher,
 }
@@ -239,6 +249,18 @@ impl RadarFileParser {
     ProductSymbologyBlockLayer {
       Divider: self.fetcher.fetch_word(),
       LengthOfDataLayer: self.fetcher.fetch_dword(),
+    }
+  }
+
+  pub fn decode_radial_data_packet_header(&mut self) -> RadialDataPacketHeader {
+    RadialDataPacketHeader {
+      PacketCode: self.fetcher.fetch_word(),
+      IndexOfFirstRangeBin: self.fetcher.fetch_word(),
+      NumberOfRangeBins: self.fetcher.fetch_word(),
+      ICenterOfSweep: self.fetcher.fetch_word(),
+      JCenterOfSweep: self.fetcher.fetch_word(),
+      ScaleFactor: self.fetcher.fetch_word(),
+      NumberOfRadials: self.fetcher.fetch_word(),
     }
   }
 }
