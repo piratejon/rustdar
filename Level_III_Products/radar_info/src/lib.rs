@@ -104,12 +104,12 @@ impl RadarFetcher {
 
   pub fn fetch_word(&mut self) -> u16 {
     let buf = self.fetch_bytes(2);
-    return (((buf[0] as u16) << 8) | (buf[1] as u16));
+    return ((buf[0] as u16) << 8) | (buf[1] as u16);
   }
 
   pub fn fetch_dword(&mut self) -> u32 {
     let buf = self.fetch_bytes(4);
-    return (((buf[0] as u32) << 24) | ((buf[1] as u32) << 16) | ((buf[2] as u32) << 8) | (buf[3] as u32));
+    return ((buf[0] as u32) << 24) | ((buf[1] as u32) << 16) | ((buf[2] as u32) << 8) | (buf[3] as u32);
   }
 
   pub fn fetch_bytes(&mut self, bytes: usize) -> Vec<u8> {
@@ -166,7 +166,6 @@ impl RadarFileParser {
   }
 
   pub fn decode_message_header(&mut self) -> MessageHeader {
-    let offset = 30;
     MessageHeader {
       message_code: self.fetcher.fetch_word(),
       date_of_message: self.fetcher.fetch_word(),
@@ -286,7 +285,7 @@ impl RadarFileParser {
 
   pub fn fetch_radial_data_packet_radial_runs(&mut self, runs : u16) -> Vec<RadialDataPacketRadialRun> {
     let mut radial_data_packet_radial_runs = Vec::<RadialDataPacketRadialRun>::new();
-    for i in 0..(runs*2) {
+    for _ in 0..(runs*2) {
       let word = self.fetcher.fetch_byte();
       radial_data_packet_radial_runs.push(RadialDataPacketRadialRun {
             length: (word & 0xf0) >> 4,
