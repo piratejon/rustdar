@@ -131,12 +131,12 @@ impl RadarFetcher {
         break;
       }
 
-      self.last_read_size += 1;
-
-      if self.last_read_size == bytes {
+      if buf.len() == bytes {
         break;
       }
     }
+
+    self.last_read_size = buf.len();
 
     return buf;
   }
