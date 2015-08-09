@@ -15,8 +15,8 @@ pub struct MessageHeader {
 
 pub struct ProductDescriptionBlock {
   pub Divider: u16,
-  pub Latitude1K: u32,
-  pub Longitude1K: u32,
+  pub Latitude1K: i32,
+  pub Longitude1K: i32,
   pub Height: u16,
   pub ProductCode: u16,
   pub OperationalMode: u16,
@@ -181,8 +181,8 @@ impl RadarFileParser {
   pub fn decode_product_description_block(&mut self) -> ProductDescriptionBlock {
     let mut pdb = ProductDescriptionBlock {
       Divider: self.fetcher.fetch_word(),
-      Latitude1K: self.fetcher.fetch_dword(),
-      Longitude1K: self.fetcher.fetch_dword(),
+      Latitude1K: self.fetcher.fetch_dword() as i32,
+      Longitude1K: self.fetcher.fetch_dword() as i32,
       Height: self.fetcher.fetch_word(),
       ProductCode: self.fetcher.fetch_word(),
       OperationalMode: self.fetcher.fetch_word(),
@@ -276,9 +276,17 @@ impl RadarFileParser {
     }
   }
 
+  pub fn fetch_radial_data_packet_radial_run(&mut self) -> RadialDataPacketRadialRun {
+    let word = self.fetcher.fetch_byte();
+    return RadialDataPacketRadialRun {
+      Length: (word & 0xf0) >> 4,
+      Color: (word & 0x0f),
+    }
+  }
+
   pub fn fetch_radial_data_packet_radial_runs(&mut self, runs : u16) -> Vec<RadialDataPacketRadialRun> {
     let mut radial_data_packet_radial_runs = Vec::<RadialDataPacketRadialRun>::new();
-    for i in 0..runs {
+    for i in 0..(runs*2) {
       let word = self.fetcher.fetch_byte();
       radial_data_packet_radial_runs.push(RadialDataPacketRadialRun {
             Length: (word & 0xf0) >> 4,
