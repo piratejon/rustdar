@@ -297,5 +297,21 @@ fn ri_read_a_file() {
   assert_eq!(radial_data_packet_radial_runs[55].color, radial_data_packet_radial_runs_control[55].color);
   assert_eq!(radial_data_packet_radial_runs[56].color, radial_data_packet_radial_runs_control[56].color);
   assert_eq!(radial_data_packet_radial_runs[57].color, radial_data_packet_radial_runs_control[57].color);
+
+  let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+  assert_eq!(radial_data_packet_radial_header.number_of_half_word_words, 34);
+  assert_eq!(radial_data_packet_radial_header.radial_start_angle, 2690);
+  assert_eq!(radial_data_packet_radial_header.radial_angle_delta, 9);
+
+  radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+
+  let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+  assert_eq!(radial_data_packet_radial_header.radial_start_angle, 2699);
+  radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+
+  for _ in 3..radial_data_packet_header.number_of_radials {
+    let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+    radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+  }
 }
 
