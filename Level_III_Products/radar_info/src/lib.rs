@@ -140,14 +140,6 @@ impl RadarFetcher {
 
     return buf;
   }
-
-  pub fn word_maker(&self, hi : u8, lo : u8) -> u16 {
-    return ((hi as u16) << 8) | (lo as u16);
-  }
-
-  pub fn dword_maker(&self, hi : u16, lo : u16) -> u32 {
-    return ((hi as u32) << 16) | (lo as u32);
-  }
 }
 
 impl RadarFileParser {
