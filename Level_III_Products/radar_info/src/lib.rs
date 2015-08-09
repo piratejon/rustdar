@@ -4,72 +4,72 @@ use std::io::BufReader;
 use std::io::Read;
 
 pub struct MessageHeader {
-  pub MessageCode: u16,
-  pub DateOfMessage: u16,
-  pub TimeOfMessage: u32,
-  pub LengthOfMessage: u32,
-  pub SourceID: u16,
-  pub DestinationID: u16,
-  pub NumberOfBlocks: u16
+  pub message_code: u16,
+  pub date_of_message: u16,
+  pub time_of_message: u32,
+  pub length_of_message: u32,
+  pub source_id: u16,
+  pub destination_id: u16,
+  pub number_of_blocks: u16
 }
 
 pub struct ProductDescriptionBlock {
-  pub Divider: u16,
-  pub Latitude1K: i32,
-  pub Longitude1K: i32,
-  pub Height: u16,
-  pub ProductCode: u16,
-  pub OperationalMode: u16,
-  pub VolumeCoveragePattern: u16,
-  pub SequenceNumber: u16,
-  pub VolumeScanNumber: u16,
-  pub VolumeScanDate: u16,
-  pub VolumeScanStartTime: u32,
-  pub ProductGenerationDate: u16,
-  pub ProductGenerationTime: u32,
-  pub ProductDependent: [u16; 10],
-  pub ElevationNumber: u16,
-  pub DataLevelThreshold: [u16; 16],
-  pub Version: u8,
-  pub SpotBlank: u8,
-  pub OffsetToSymbology: u32,
-  pub OffsetToGraphic: u32,
-  pub OffsetToTabular: u32,
+  pub divider: u16,
+  pub latitude_1k: i32,
+  pub longitude_1k: i32,
+  pub height: u16,
+  pub product_code: u16,
+  pub operational_mode: u16,
+  pub volume_coverage_pattern: u16,
+  pub sequence_number: u16,
+  pub volume_scan_number: u16,
+  pub volume_scan_date: u16,
+  pub volume_scan_start_time: u32,
+  pub product_generation_date: u16,
+  pub product_generation_time: u32,
+  pub product_dependent: [u16; 10],
+  pub elevation_number: u16,
+  pub data_level_threshold: [u16; 16],
+  pub version: u8,
+  pub spot_blank: u8,
+  pub offset_to_symbology: u32,
+  pub offset_to_graphic: u32,
+  pub offset_to_tabular: u32,
 }
 
 pub struct ProductSymbologyBlock {
-  pub Divider: u16,
-  pub BlockId: u16,
-  pub LengthOfBlock: u32,
-  pub NumberOfLayers: u16,
+  pub divider: u16,
+  pub block_id: u16,
+  pub length_of_block: u32,
+  pub number_of_layers: u16,
 //  pub Layers: Vec<ProductSymbologyBlockLayer>,
 }
 
 pub struct ProductSymbologyBlockLayer {
-  pub Divider: u16,
-  pub LengthOfDataLayer: u32,
+  pub divider: u16,
+  pub length_of_data_layer: u32,
 }
 
 pub struct RadialDataPacketHeader {
-  pub PacketCode: u16,
-  pub IndexOfFirstRangeBin: u16,
-  pub NumberOfRangeBins: u16,
-  pub ICenterOfSweep: u16,
-  pub JCenterOfSweep: u16,
-  pub ScaleFactor: u16,
-  pub NumberOfRadials: u16,
+  pub packet_code: u16,
+  pub index_of_first_range_bin: u16,
+  pub number_of_range_bins: u16,
+  pub i_center_of_sweep: u16,
+  pub j_center_of_sweep: u16,
+  pub scale_factor: u16,
+  pub number_of_radials: u16,
 }
 
 #[derive(Debug)]
 pub struct RadialDataPacketRadialRun {
-  pub Length: u8,
-  pub Color: u8,
+  pub length: u8,
+  pub color: u8,
 }
 
 pub struct RadialDataPacketRadialHeader {
-  pub NumberOfHalfWords: u16,
-  pub RadialStartAngle: u16,
-  pub RadialAngleDelta: u16,
+  pub number_of_half_word_words: u16,
+  pub radial_start_angle: u16,
+  pub radial_angle_delta: u16,
 }
 
 pub struct RadarFileParser {
@@ -168,50 +168,50 @@ impl RadarFileParser {
   pub fn decode_message_header(&mut self) -> MessageHeader {
     let offset = 30;
     MessageHeader {
-      MessageCode: self.fetcher.fetch_word(),
-      DateOfMessage: self.fetcher.fetch_word(),
-      TimeOfMessage: self.fetcher.fetch_dword(),
-      LengthOfMessage: self.fetcher.fetch_dword(),
-      SourceID: self.fetcher.fetch_word(),
-      DestinationID: self.fetcher.fetch_word(),
-      NumberOfBlocks: self.fetcher.fetch_word(),
+      message_code: self.fetcher.fetch_word(),
+      date_of_message: self.fetcher.fetch_word(),
+      time_of_message: self.fetcher.fetch_dword(),
+      length_of_message: self.fetcher.fetch_dword(),
+      source_id: self.fetcher.fetch_word(),
+      destination_id: self.fetcher.fetch_word(),
+      number_of_blocks: self.fetcher.fetch_word(),
     }
   }
 
   pub fn decode_product_description_block(&mut self) -> ProductDescriptionBlock {
     let mut pdb = ProductDescriptionBlock {
-      Divider: self.fetcher.fetch_word(),
-      Latitude1K: self.fetcher.fetch_dword() as i32,
-      Longitude1K: self.fetcher.fetch_dword() as i32,
-      Height: self.fetcher.fetch_word(),
-      ProductCode: self.fetcher.fetch_word(),
-      OperationalMode: self.fetcher.fetch_word(),
-      VolumeCoveragePattern: self.fetcher.fetch_word(),
-      SequenceNumber: self.fetcher.fetch_word(),
-      VolumeScanNumber: self.fetcher.fetch_word(),
-      VolumeScanDate: self.fetcher.fetch_word(),
-      VolumeScanStartTime: self.fetcher.fetch_dword(),
-      ProductGenerationDate: self.fetcher.fetch_word(),
-      ProductGenerationTime: self.fetcher.fetch_dword(),
-      ProductDependent: [
+      divider: self.fetcher.fetch_word(),
+      latitude_1k: self.fetcher.fetch_dword() as i32,
+      longitude_1k: self.fetcher.fetch_dword() as i32,
+      height: self.fetcher.fetch_word(),
+      product_code: self.fetcher.fetch_word(),
+      operational_mode: self.fetcher.fetch_word(),
+      volume_coverage_pattern: self.fetcher.fetch_word(),
+      sequence_number: self.fetcher.fetch_word(),
+      volume_scan_number: self.fetcher.fetch_word(),
+      volume_scan_date: self.fetcher.fetch_word(),
+      volume_scan_start_time: self.fetcher.fetch_dword(),
+      product_generation_date: self.fetcher.fetch_word(),
+      product_generation_time: self.fetcher.fetch_dword(),
+      product_dependent: [
         self.fetcher.fetch_word(),
         self.fetcher.fetch_word(),
         0, 0, 0, 0, 0, 0, 0, 0
       ],
-      ElevationNumber: self.fetcher.fetch_word(),
-      DataLevelThreshold: [
+      elevation_number: self.fetcher.fetch_word(),
+      data_level_threshold: [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
-      Version: 0,
-      SpotBlank: 0,
-      OffsetToSymbology: 0,
-      OffsetToGraphic: 0,
-      OffsetToTabular: 0,
+      version: 0,
+      spot_blank: 0,
+      offset_to_symbology: 0,
+      offset_to_graphic: 0,
+      offset_to_tabular: 0,
     };
 
-    pdb.ProductDependent[2] = self.fetcher.fetch_word();
+    pdb.product_dependent[2] = self.fetcher.fetch_word();
 
-    pdb.DataLevelThreshold = [
+    pdb.data_level_threshold = [
       self.fetcher.fetch_word(),
       self.fetcher.fetch_word(),
       self.fetcher.fetch_word(),
@@ -230,57 +230,57 @@ impl RadarFileParser {
       self.fetcher.fetch_word(),
     ];
 
-    pdb.ProductDependent[3] = self.fetcher.fetch_word();
-    pdb.ProductDependent[4] = self.fetcher.fetch_word();
-    pdb.ProductDependent[5] = self.fetcher.fetch_word();
-    pdb.ProductDependent[6] = self.fetcher.fetch_word();
-    pdb.ProductDependent[7] = self.fetcher.fetch_word();
-    pdb.ProductDependent[8] = self.fetcher.fetch_word();
-    pdb.ProductDependent[9] = self.fetcher.fetch_word();
+    pdb.product_dependent[3] = self.fetcher.fetch_word();
+    pdb.product_dependent[4] = self.fetcher.fetch_word();
+    pdb.product_dependent[5] = self.fetcher.fetch_word();
+    pdb.product_dependent[6] = self.fetcher.fetch_word();
+    pdb.product_dependent[7] = self.fetcher.fetch_word();
+    pdb.product_dependent[8] = self.fetcher.fetch_word();
+    pdb.product_dependent[9] = self.fetcher.fetch_word();
 
-    pdb.Version = self.fetcher.fetch_byte();
-    pdb.SpotBlank = self.fetcher.fetch_byte();
+    pdb.version = self.fetcher.fetch_byte();
+    pdb.spot_blank = self.fetcher.fetch_byte();
 
-    pdb.OffsetToSymbology = self.fetcher.fetch_dword();
-    pdb.OffsetToGraphic = self.fetcher.fetch_dword();
-    pdb.OffsetToTabular = self.fetcher.fetch_dword();
+    pdb.offset_to_symbology = self.fetcher.fetch_dword();
+    pdb.offset_to_graphic = self.fetcher.fetch_dword();
+    pdb.offset_to_tabular = self.fetcher.fetch_dword();
 
     return pdb;
   }
 
   pub fn decode_product_symbology_block(&mut self) -> ProductSymbologyBlock {
     ProductSymbologyBlock {
-      Divider: self.fetcher.fetch_word(),
-      BlockId: self.fetcher.fetch_word(),
-      LengthOfBlock: self.fetcher.fetch_dword(),
-      NumberOfLayers: self.fetcher.fetch_word(),
+      divider: self.fetcher.fetch_word(),
+      block_id: self.fetcher.fetch_word(),
+      length_of_block: self.fetcher.fetch_dword(),
+      number_of_layers: self.fetcher.fetch_word(),
     }
   }
 
   pub fn decode_product_symbology_block_layer(&mut self) -> ProductSymbologyBlockLayer {
     ProductSymbologyBlockLayer {
-      Divider: self.fetcher.fetch_word(),
-      LengthOfDataLayer: self.fetcher.fetch_dword(),
+      divider: self.fetcher.fetch_word(),
+      length_of_data_layer: self.fetcher.fetch_dword(),
     }
   }
 
   pub fn decode_radial_data_packet_header(&mut self) -> RadialDataPacketHeader {
     RadialDataPacketHeader {
-      PacketCode: self.fetcher.fetch_word(),
-      IndexOfFirstRangeBin: self.fetcher.fetch_word(),
-      NumberOfRangeBins: self.fetcher.fetch_word(),
-      ICenterOfSweep: self.fetcher.fetch_word(),
-      JCenterOfSweep: self.fetcher.fetch_word(),
-      ScaleFactor: self.fetcher.fetch_word(),
-      NumberOfRadials: self.fetcher.fetch_word(),
+      packet_code: self.fetcher.fetch_word(),
+      index_of_first_range_bin: self.fetcher.fetch_word(),
+      number_of_range_bins: self.fetcher.fetch_word(),
+      i_center_of_sweep: self.fetcher.fetch_word(),
+      j_center_of_sweep: self.fetcher.fetch_word(),
+      scale_factor: self.fetcher.fetch_word(),
+      number_of_radials: self.fetcher.fetch_word(),
     }
   }
 
   pub fn fetch_radial_data_packet_radial_run(&mut self) -> RadialDataPacketRadialRun {
     let word = self.fetcher.fetch_byte();
     return RadialDataPacketRadialRun {
-      Length: (word & 0xf0) >> 4,
-      Color: (word & 0x0f),
+      length: (word & 0xf0) >> 4,
+      color: (word & 0x0f),
     }
   }
 
@@ -289,8 +289,8 @@ impl RadarFileParser {
     for i in 0..(runs*2) {
       let word = self.fetcher.fetch_byte();
       radial_data_packet_radial_runs.push(RadialDataPacketRadialRun {
-            Length: (word & 0xf0) >> 4,
-            Color: (word & 0x0f),
+            length: (word & 0xf0) >> 4,
+            color: (word & 0x0f),
           });
     }
     return radial_data_packet_radial_runs;
@@ -298,9 +298,9 @@ impl RadarFileParser {
 
   pub fn decode_radial_data_packet_radial_header(&mut self) -> RadialDataPacketRadialHeader {
     RadialDataPacketRadialHeader {
-      NumberOfHalfWords: self.fetcher.fetch_word(),
-      RadialStartAngle: self.fetcher.fetch_word(),
-      RadialAngleDelta: self.fetcher.fetch_word(),
+      number_of_half_word_words: self.fetcher.fetch_word(),
+      radial_start_angle: self.fetcher.fetch_word(),
+      radial_angle_delta: self.fetcher.fetch_word(),
     }
   }
 }
