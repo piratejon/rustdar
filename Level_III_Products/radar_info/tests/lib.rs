@@ -123,39 +123,46 @@ fn ri_read_a_file() {
   assert_eq!(radial_data_packet_radial_header.NumberOfHalfWords, 30);
   assert_eq!(radial_data_packet_radial_header.RadialStartAngle, 2680);
   assert_eq!(radial_data_packet_radial_header.RadialAngleDelta, 10);
-  /*
-  assert_eq!(radial_data_packet_radial.Runs, [
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-      { 0x20; 0x32 },
-  ]);
-  */
+
+  let radial_data_packet_radial_runs = radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.NumberOfHalfWords);
+  let radial_data_packet_radial_runs_control = vec![
+      radar_info::RadialDataPacketRadialRun { Length: 2, Color: 0 },
+      radar_info::RadialDataPacketRadialRun { Length: 3, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 3 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 5, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 4, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 4 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 2, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 5, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 3, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 3, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 2, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 4, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 3, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 2, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 4, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 2, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 2, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 6, Color: 1 },
+      radar_info::RadialDataPacketRadialRun { Length: 3, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 4 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 2 },
+      radar_info::RadialDataPacketRadialRun { Length: 1, Color: 0 },
+  ];
+
+  assert_eq!(radial_data_packet_radial_runs.len(), radial_data_packet_radial_runs_control.len());
+
+  for (a, b) in radial_data_packet_radial_runs.iter().zip(radial_data_packet_radial_runs_control) {
+    assert_eq!(a.Length, b.Length);
+    assert_eq!(a.Color, b.Color);
+  }
 }
 
