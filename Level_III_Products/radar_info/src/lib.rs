@@ -60,7 +60,6 @@ pub struct RadialDataPacketHeader {
   pub number_of_radials: u16,
 }
 
-#[derive(Debug)]
 pub struct RadialDataPacketRadialRun {
   pub length: u8,
   pub color: u8,
@@ -73,12 +72,12 @@ pub struct RadialDataPacketRadialHeader {
 }
 
 pub struct RadarFileParser {
-  fetcher: RadarFetcher,
+  pub fetcher: RadarFetcher,
 }
 
 pub struct RadarFetcher {
   buffered_reader: BufReader<File>,
-  last_read_size: usize,
+  pub last_read_size: usize,
 }
 
 impl RadarFetcher {
@@ -138,6 +137,15 @@ impl RadarFetcher {
 
     self.last_read_size = buf.len();
 
+    return buf;
+  }
+
+  pub fn fetch_remaining_bytes(&mut self) -> Vec<u8> {
+    let mut buf = Vec::<u8>::new();
+    self.last_read_size = match self.buffered_reader.read_to_end(&mut buf) {
+      Ok(bytes_read) => bytes_read,
+      Err(..) => panic!("failed to read remaining bytes"),
+    };
     return buf;
   }
 }

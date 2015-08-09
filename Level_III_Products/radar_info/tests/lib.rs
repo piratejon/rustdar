@@ -311,7 +311,12 @@ fn ri_read_a_file() {
 
   for _ in 3..radial_data_packet_header.number_of_radials {
     let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+    assert!(radar_parser.fetcher.last_read_size > 0);
     radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+    assert!(radar_parser.fetcher.last_read_size > 0);
   }
+
+  let remaining_bytes = radar_parser.fetcher.fetch_remaining_bytes();
+  assert_eq!(remaining_bytes.len(), 0);
 }
 
