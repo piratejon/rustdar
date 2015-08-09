@@ -278,11 +278,7 @@ impl RadarFileParser {
   pub fn fetch_radial_data_packet_radial_runs(&mut self, runs : u16) -> Vec<RadialDataPacketRadialRun> {
     let mut radial_data_packet_radial_runs = Vec::<RadialDataPacketRadialRun>::new();
     for _ in 0..(runs*2) {
-      let word = self.fetcher.fetch_byte();
-      radial_data_packet_radial_runs.push(RadialDataPacketRadialRun {
-            length: (word & 0xf0) >> 4,
-            color: (word & 0x0f),
-          });
+      radial_data_packet_radial_runs.push(self.fetch_radial_data_packet_radial_run());
     }
     return radial_data_packet_radial_runs;
   }
