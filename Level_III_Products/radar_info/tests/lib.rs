@@ -22,14 +22,14 @@ fn ri_radar_fetcher() {
 }
 
 #[test]
-fn ri_read_a_file() {
-  let mut radar_parser = radar_info::RadarFileParser::from_fetcher(
+fn ri_decode_a_file() {
+  let mut radar_decoder = radar_info::RadarFileDecoder::from_fetcher(
       radar_info::RadarFetcher::from_file("tests/sn.last")
       );
 
-  assert_eq!(radar_parser.decode_text_header(), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
+  assert_eq!(radar_decoder.decode_text_header(), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
 
-  let message_header = radar_parser.decode_message_header();
+  let message_header = radar_decoder.decode_message_header();
   assert_eq!(message_header.message_code, 19);
   assert_eq!(message_header.date_of_message, 16651);
   assert_eq!(message_header.time_of_message, 10324);
@@ -38,7 +38,7 @@ fn ri_read_a_file() {
   assert_eq!(message_header.destination_id, 0);
   assert_eq!(message_header.number_of_blocks, 3);
 
-  let product_description_block = radar_parser.decode_product_description_block();
+  let product_description_block = radar_decoder.decode_product_description_block();
   assert_eq!(product_description_block.divider, 0xffff);
   assert_eq!(product_description_block.latitude_1k, 35333);
   assert_eq!(product_description_block.longitude_1k, -97278);
@@ -85,17 +85,17 @@ fn ri_read_a_file() {
   assert_eq!(product_description_block.offset_to_graphic, 0);
   assert_eq!(product_description_block.offset_to_tabular, 0);
 
-  let product_symbology_block = radar_parser.decode_product_symbology_block();
+  let product_symbology_block = radar_decoder.decode_product_symbology_block();
   assert_eq!(product_symbology_block.divider, 0xffff);
   assert_eq!(product_symbology_block.block_id, 1);
   assert_eq!(product_symbology_block.length_of_block, 22028);
   assert_eq!(product_symbology_block.number_of_layers, 1);
 
-  let product_symbology_block_layer = radar_parser.decode_product_symbology_block_layer();
+  let product_symbology_block_layer = radar_decoder.decode_product_symbology_block_layer();
   assert_eq!(product_symbology_block_layer.divider, 0xffff);
   assert_eq!(product_symbology_block_layer.length_of_data_layer, 22012);
 
-  let radial_data_packet_header = radar_parser.decode_radial_data_packet_header();
+  let radial_data_packet_header = radar_decoder.decode_radial_data_packet_header();
   assert_eq!(radial_data_packet_header.packet_code, 0xaf1f);
   assert_eq!(radial_data_packet_header.index_of_first_range_bin, 0);
   assert_eq!(radial_data_packet_header.number_of_range_bins, 230);
@@ -104,20 +104,20 @@ fn ri_read_a_file() {
   assert_eq!(radial_data_packet_header.scale_factor, 999);
   assert_eq!(radial_data_packet_header.number_of_radials, 360);
 
-  let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+  let radial_data_packet_radial_header = radar_decoder.decode_radial_data_packet_radial_header();
   assert_eq!(radial_data_packet_radial_header.number_of_half_word_words, 30);
   assert_eq!(radial_data_packet_radial_header.radial_start_angle, 2680);
   assert_eq!(radial_data_packet_radial_header.radial_angle_delta, 10);
 
-  let radial_data_packet_radial_run = radar_parser.fetch_radial_data_packet_radial_run();
+  let radial_data_packet_radial_run = radar_decoder.fetch_radial_data_packet_radial_run();
   assert_eq!(radial_data_packet_radial_run.length, 2);
   assert_eq!(radial_data_packet_radial_run.color, 0);
 
-  let radial_data_packet_radial_run = radar_parser.fetch_radial_data_packet_radial_run();
+  let radial_data_packet_radial_run = radar_decoder.fetch_radial_data_packet_radial_run();
   assert_eq!(radial_data_packet_radial_run.length, 3);
   assert_eq!(radial_data_packet_radial_run.color, 2);
 
-  let radial_data_packet_radial_runs = radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words - 1);
+  let radial_data_packet_radial_runs = radar_decoder.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words - 1);
 
   let radial_data_packet_radial_runs_control = vec![
     radar_info::RadialDataPacketRadialRun { length: 1, color: 1 },
@@ -298,25 +298,37 @@ fn ri_read_a_file() {
   assert_eq!(radial_data_packet_radial_runs[56].color, radial_data_packet_radial_runs_control[56].color);
   assert_eq!(radial_data_packet_radial_runs[57].color, radial_data_packet_radial_runs_control[57].color);
 
-  let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+  let radial_data_packet_radial_header = radar_decoder.decode_radial_data_packet_radial_header();
   assert_eq!(radial_data_packet_radial_header.number_of_half_word_words, 34);
   assert_eq!(radial_data_packet_radial_header.radial_start_angle, 2690);
   assert_eq!(radial_data_packet_radial_header.radial_angle_delta, 9);
 
-  radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+  radar_decoder.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
 
-  let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
+  let radial_data_packet_radial_header = radar_decoder.decode_radial_data_packet_radial_header();
   assert_eq!(radial_data_packet_radial_header.radial_start_angle, 2699);
-  radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+  radar_decoder.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
 
   for _ in 3..radial_data_packet_header.number_of_radials {
-    let radial_data_packet_radial_header = radar_parser.decode_radial_data_packet_radial_header();
-    assert!(radar_parser.fetcher.last_read_size > 0);
-    radar_parser.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
-    assert!(radar_parser.fetcher.last_read_size > 0);
+    let radial_data_packet_radial_header = radar_decoder.decode_radial_data_packet_radial_header();
+    assert!(radar_decoder.fetcher.last_read_size > 0);
+    radar_decoder.fetch_radial_data_packet_radial_runs(radial_data_packet_radial_header.number_of_half_word_words);
+    assert!(radar_decoder.fetcher.last_read_size > 0);
   }
 
-  let remaining_bytes = radar_parser.fetcher.fetch_remaining_bytes();
+  let remaining_bytes = radar_decoder.fetcher.fetch_remaining_bytes();
   assert_eq!(remaining_bytes.len(), 0);
 }
+
+/*
+#[test]
+fn ri_file_to_memory() {
+  let mut radar_parser = radar_info::RadarFileParser::from_fetcher(
+      radar_info::RadarFetcher::from_file("tests/sn.last")
+      );
+
+  let parsed_file = radar_parser.parse();
+  assert_eq!(parsed_file.get_text_header(), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
+}
+*/
 

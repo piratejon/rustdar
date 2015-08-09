@@ -71,7 +71,7 @@ pub struct RadialDataPacketRadialHeader {
   pub radial_angle_delta: u16,
 }
 
-pub struct RadarFileParser {
+pub struct RadarFileDecoder {
   pub fetcher: RadarFetcher,
 }
 
@@ -150,9 +150,9 @@ impl RadarFetcher {
   }
 }
 
-impl RadarFileParser {
-  pub fn from_fetcher(radar_fetcher: RadarFetcher) -> RadarFileParser {
-    RadarFileParser {
+impl RadarFileDecoder {
+  pub fn from_fetcher(radar_fetcher: RadarFetcher) -> RadarFileDecoder {
+    RadarFileDecoder {
       fetcher: radar_fetcher
     }
   }
