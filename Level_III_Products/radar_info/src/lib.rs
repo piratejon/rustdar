@@ -42,7 +42,6 @@ pub struct ProductSymbologyBlock {
   pub block_id: u16,
   pub length_of_block: u32,
   pub number_of_layers: u16,
-//  pub Layers: Vec<ProductSymbologyBlockLayer>,
 }
 
 pub struct ProductSymbologyBlockLayer {
@@ -71,8 +70,13 @@ pub struct RadialDataPacketRadialHeader {
   pub radial_angle_delta: u16,
 }
 
+pub struct RadarFileParser {
+  pub decoder: RadarFileDecoder,
+}
+
 pub struct RadarFileDecoder {
-  pub fetcher: RadarFetcher,
+  pub x: u32,
+  // pub fetcher: RadarFetcher,
 }
 
 pub struct RadarFetcher {
@@ -151,53 +155,47 @@ impl RadarFetcher {
 }
 
 impl RadarFileDecoder {
-  pub fn from_fetcher(radar_fetcher: RadarFetcher) -> RadarFileDecoder {
-    RadarFileDecoder {
-      fetcher: radar_fetcher
-    }
-  }
-
-  pub fn decode_text_header(&mut self) -> String {
-    let text_header_bytes = self.fetcher.fetch_bytes(30);
+  pub fn decode_text_header(&self, fetcher: &mut RadarFetcher) -> String {
+    let text_header_bytes = fetcher.fetch_bytes(30);
     return match String::from_utf8(text_header_bytes) {
       Ok(ret) => ret,
       Err(..) => panic!("Unable to decode text header"),
     };
   }
 
-  pub fn decode_message_header(&mut self) -> MessageHeader {
+  pub fn decode_message_header(&self, fetcher: &mut RadarFetcher) -> MessageHeader {
     MessageHeader {
-      message_code: self.fetcher.fetch_word(),
-      date_of_message: self.fetcher.fetch_word(),
-      time_of_message: self.fetcher.fetch_dword(),
-      length_of_message: self.fetcher.fetch_dword(),
-      source_id: self.fetcher.fetch_word(),
-      destination_id: self.fetcher.fetch_word(),
-      number_of_blocks: self.fetcher.fetch_word(),
+      message_code: fetcher.fetch_word(),
+      date_of_message: fetcher.fetch_word(),
+      time_of_message: fetcher.fetch_dword(),
+      length_of_message: fetcher.fetch_dword(),
+      source_id: fetcher.fetch_word(),
+      destination_id: fetcher.fetch_word(),
+      number_of_blocks: fetcher.fetch_word(),
     }
   }
 
-  pub fn decode_product_description_block(&mut self) -> ProductDescriptionBlock {
+  pub fn decode_product_description_block(&self, fetcher: &mut RadarFetcher) -> ProductDescriptionBlock {
     let mut pdb = ProductDescriptionBlock {
-      divider: self.fetcher.fetch_word(),
-      latitude_1k: self.fetcher.fetch_dword() as i32,
-      longitude_1k: self.fetcher.fetch_dword() as i32,
-      height: self.fetcher.fetch_word(),
-      product_code: self.fetcher.fetch_word(),
-      operational_mode: self.fetcher.fetch_word(),
-      volume_coverage_pattern: self.fetcher.fetch_word(),
-      sequence_number: self.fetcher.fetch_word(),
-      volume_scan_number: self.fetcher.fetch_word(),
-      volume_scan_date: self.fetcher.fetch_word(),
-      volume_scan_start_time: self.fetcher.fetch_dword(),
-      product_generation_date: self.fetcher.fetch_word(),
-      product_generation_time: self.fetcher.fetch_dword(),
+      divider: fetcher.fetch_word(),
+      latitude_1k: fetcher.fetch_dword() as i32,
+      longitude_1k: fetcher.fetch_dword() as i32,
+      height: fetcher.fetch_word(),
+      product_code: fetcher.fetch_word(),
+      operational_mode: fetcher.fetch_word(),
+      volume_coverage_pattern: fetcher.fetch_word(),
+      sequence_number: fetcher.fetch_word(),
+      volume_scan_number: fetcher.fetch_word(),
+      volume_scan_date: fetcher.fetch_word(),
+      volume_scan_start_time: fetcher.fetch_dword(),
+      product_generation_date: fetcher.fetch_word(),
+      product_generation_time: fetcher.fetch_dword(),
       product_dependent: [
-        self.fetcher.fetch_word(),
-        self.fetcher.fetch_word(),
+        fetcher.fetch_word(),
+        fetcher.fetch_word(),
         0, 0, 0, 0, 0, 0, 0, 0
       ],
-      elevation_number: self.fetcher.fetch_word(),
+      elevation_number: fetcher.fetch_word(),
       data_level_threshold: [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       ],
@@ -208,94 +206,102 @@ impl RadarFileDecoder {
       offset_to_tabular: 0,
     };
 
-    pdb.product_dependent[2] = self.fetcher.fetch_word();
+    pdb.product_dependent[2] = fetcher.fetch_word();
 
     pdb.data_level_threshold = [
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
-      self.fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
+      fetcher.fetch_word(),
     ];
 
-    pdb.product_dependent[3] = self.fetcher.fetch_word();
-    pdb.product_dependent[4] = self.fetcher.fetch_word();
-    pdb.product_dependent[5] = self.fetcher.fetch_word();
-    pdb.product_dependent[6] = self.fetcher.fetch_word();
-    pdb.product_dependent[7] = self.fetcher.fetch_word();
-    pdb.product_dependent[8] = self.fetcher.fetch_word();
-    pdb.product_dependent[9] = self.fetcher.fetch_word();
+    pdb.product_dependent[3] = fetcher.fetch_word();
+    pdb.product_dependent[4] = fetcher.fetch_word();
+    pdb.product_dependent[5] = fetcher.fetch_word();
+    pdb.product_dependent[6] = fetcher.fetch_word();
+    pdb.product_dependent[7] = fetcher.fetch_word();
+    pdb.product_dependent[8] = fetcher.fetch_word();
+    pdb.product_dependent[9] = fetcher.fetch_word();
 
-    pdb.version = self.fetcher.fetch_byte();
-    pdb.spot_blank = self.fetcher.fetch_byte();
+    pdb.version = fetcher.fetch_byte();
+    pdb.spot_blank = fetcher.fetch_byte();
 
-    pdb.offset_to_symbology = self.fetcher.fetch_dword();
-    pdb.offset_to_graphic = self.fetcher.fetch_dword();
-    pdb.offset_to_tabular = self.fetcher.fetch_dword();
+    pdb.offset_to_symbology = fetcher.fetch_dword();
+    pdb.offset_to_graphic = fetcher.fetch_dword();
+    pdb.offset_to_tabular = fetcher.fetch_dword();
 
     return pdb;
   }
 
-  pub fn decode_product_symbology_block(&mut self) -> ProductSymbologyBlock {
+  pub fn decode_product_symbology_block(&self, fetcher: &mut RadarFetcher) -> ProductSymbologyBlock {
     ProductSymbologyBlock {
-      divider: self.fetcher.fetch_word(),
-      block_id: self.fetcher.fetch_word(),
-      length_of_block: self.fetcher.fetch_dword(),
-      number_of_layers: self.fetcher.fetch_word(),
+      divider: fetcher.fetch_word(),
+      block_id: fetcher.fetch_word(),
+      length_of_block: fetcher.fetch_dword(),
+      number_of_layers: fetcher.fetch_word(),
     }
   }
 
-  pub fn decode_product_symbology_block_layer(&mut self) -> ProductSymbologyBlockLayer {
+  pub fn decode_product_symbology_block_layer(&self, fetcher: &mut RadarFetcher) -> ProductSymbologyBlockLayer {
     ProductSymbologyBlockLayer {
-      divider: self.fetcher.fetch_word(),
-      length_of_data_layer: self.fetcher.fetch_dword(),
+      divider: fetcher.fetch_word(),
+      length_of_data_layer: fetcher.fetch_dword(),
     }
   }
 
-  pub fn decode_radial_data_packet_header(&mut self) -> RadialDataPacketHeader {
+  pub fn decode_radial_data_packet_header(&self, fetcher: &mut RadarFetcher) -> RadialDataPacketHeader {
     RadialDataPacketHeader {
-      packet_code: self.fetcher.fetch_word(),
-      index_of_first_range_bin: self.fetcher.fetch_word(),
-      number_of_range_bins: self.fetcher.fetch_word(),
-      i_center_of_sweep: self.fetcher.fetch_word(),
-      j_center_of_sweep: self.fetcher.fetch_word(),
-      scale_factor: self.fetcher.fetch_word(),
-      number_of_radials: self.fetcher.fetch_word(),
+      packet_code: fetcher.fetch_word(),
+      index_of_first_range_bin: fetcher.fetch_word(),
+      number_of_range_bins: fetcher.fetch_word(),
+      i_center_of_sweep: fetcher.fetch_word(),
+      j_center_of_sweep: fetcher.fetch_word(),
+      scale_factor: fetcher.fetch_word(),
+      number_of_radials: fetcher.fetch_word(),
     }
   }
 
-  pub fn fetch_radial_data_packet_radial_run(&mut self) -> RadialDataPacketRadialRun {
-    let word = self.fetcher.fetch_byte();
+  pub fn fetch_radial_data_packet_radial_run(&self, fetcher: &mut RadarFetcher) -> RadialDataPacketRadialRun {
+    let word = fetcher.fetch_byte();
     return RadialDataPacketRadialRun {
       length: (word & 0xf0) >> 4,
       color: (word & 0x0f),
     }
   }
 
-  pub fn fetch_radial_data_packet_radial_runs(&mut self, runs : u16) -> Vec<RadialDataPacketRadialRun> {
+  pub fn fetch_radial_data_packet_radial_runs(&self, fetcher: &mut RadarFetcher, runs : u16) -> Vec<RadialDataPacketRadialRun> {
     let mut radial_data_packet_radial_runs = Vec::<RadialDataPacketRadialRun>::new();
     for _ in 0..(runs*2) {
-      radial_data_packet_radial_runs.push(self.fetch_radial_data_packet_radial_run());
+      radial_data_packet_radial_runs.push(self.fetch_radial_data_packet_radial_run(fetcher));
     }
     return radial_data_packet_radial_runs;
   }
 
-  pub fn decode_radial_data_packet_radial_header(&mut self) -> RadialDataPacketRadialHeader {
+  pub fn decode_radial_data_packet_radial_header(&self, fetcher: &mut RadarFetcher) -> RadialDataPacketRadialHeader {
     RadialDataPacketRadialHeader {
-      number_of_half_word_words: self.fetcher.fetch_word(),
-      radial_start_angle: self.fetcher.fetch_word(),
-      radial_angle_delta: self.fetcher.fetch_word(),
+      number_of_half_word_words: fetcher.fetch_word(),
+      radial_start_angle: fetcher.fetch_word(),
+      radial_angle_delta: fetcher.fetch_word(),
+    }
+  }
+}
+
+impl RadarFileParser {
+  pub fn from_decoder(&mut self, radar_decoder: RadarFileDecoder) -> RadarFileParser {
+    RadarFileParser {
+      decoder: radar_decoder
     }
   }
 }
