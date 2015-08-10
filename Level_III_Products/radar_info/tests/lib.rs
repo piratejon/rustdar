@@ -24,9 +24,7 @@ fn ri_radar_fetcher() {
 #[test]
 fn ri_decode_a_file() {
   let mut radar_fetcher = radar_info::RadarFetcher::from_file("tests/sn.last");
-  let radar_decoder : radar_info::RadarFileDecoder = radar_info::RadarFileDecoder {
-    x: 99,
-  };
+  let radar_decoder : radar_info::RadarFileDecoder = radar_info::RadarFileDecoder;
 
   assert_eq!(radar_decoder.decode_text_header(&mut radar_fetcher), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
 
@@ -321,17 +319,13 @@ fn ri_decode_a_file() {
   assert_eq!(remaining_bytes.len(), 0);
 }
 
-/*
 #[test]
 fn ri_parse_a_file() {
-  let mut radar_parser =
-    radar_info::RadarFileParser::from_decoder(
-      radar_info::RadarFileDecoder::from_fetcher(
-        radar_info::RadarFetcher::from_file("tests/sn.last")
-        )
+  let mut radar_parser = radar_info::RadarFileParser::with_fetcher(
+      radar_info::RadarFetcher::from_file("tests/sn.last"),
       );
 
   let parsed_file = radar_parser.parse();
   assert_eq!(parsed_file.get_text_header(), "SDUS54 KOUN 030251\r\r\nN0RTLX\r\r\n");
 }
-*/
+

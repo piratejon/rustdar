@@ -1,4 +1,6 @@
 
+#![feature(convert)]
+
 use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
@@ -71,17 +73,18 @@ pub struct RadialDataPacketRadialHeader {
 }
 
 pub struct RadarFileParser {
-  pub decoder: RadarFileDecoder,
+  pub fetcher: RadarFetcher,
 }
 
-pub struct RadarFileDecoder {
-  pub x: u32,
-  // pub fetcher: RadarFetcher,
-}
+pub struct RadarFileDecoder;
 
 pub struct RadarFetcher {
   buffered_reader: BufReader<File>,
   pub last_read_size: usize,
+}
+
+pub struct ParsedRadarFile {
+  text_header: String,
 }
 
 impl RadarFetcher {
@@ -299,10 +302,23 @@ impl RadarFileDecoder {
 }
 
 impl RadarFileParser {
-  pub fn from_decoder(&mut self, radar_decoder: RadarFileDecoder) -> RadarFileParser {
+  pub fn with_fetcher(radar_fetcher: RadarFetcher) -> RadarFileParser {
     RadarFileParser {
-      decoder: radar_decoder
+      fetcher: radar_fetcher
     }
+  }
+
+  pub fn parse(&mut self) -> ParsedRadarFile {
+    let radar_decoder = RadarFileDecoder;
+    ParsedRadarFile {
+      text_header: radar_decoder.decode_text_header(&mut self.fetcher),
+    }
+  }
+}
+
+impl ParsedRadarFile {
+  pub fn get_text_header(&self) -> &str {
+    return self.text_header.as_str();
   }
 }
 
